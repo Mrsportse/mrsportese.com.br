@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MRSPORTSE - Artigos Esportivos
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #dc0a28;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+        }
+
+        body {
+            background: var(--light);
+            overflow-x: hidden;
+        }
+
+        .hero-slider {
+            height: 70vh;
+            position: relative;
+        }
+
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 0 15%;
+            position: relative;
+        }
+
+        .product-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .badge-custom {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary);
+        }
+
+        .size-selector {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            transition: 0.3s;
+        }
+
+        .product-card:hover .size-selector {
+            display: block;
+        }
+
+        .cart-sidebar {
+            width: 400px;
+            background: var(--light);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: 0.3s;
+        }
+
+        .cart-open {
+            transform: translateX(0);
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            .cart-sidebar {
+                width: 100%;
+            }
+            
+            .swiper-slide {
+                padding: 0 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="bg-dark py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="text-light mb-0">UltraKits</h1>
+        <div class="d-flex gap-3">
+            <button class="btn btn-outline-light" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge bg-danger" id="cartCount">0</span>
+            </button>
+            <button class="btn btn-outline-light" onclick="toggleWishlist()">
+                <i class="fas fa-heart"></i>
+                <span class="badge bg-danger" id="wishlistCount">0</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Hero Slider -->
+<div class="hero-slider">
+    <div class="swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide bg-dark text-light" style="background-image: url('https://example.com/hero1.jpg')">
+                <div>
+                    <h2 class="display-4">Coleção 2024</h2>
+                    <p class="lead">Novos lançamentos dos principais times</p>
+                </div>
+            </div>
+            <!-- Add more slides -->
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
+<!-- Product Grid -->
+<section class="container py-5">
+    <div class="row g-4" id="productGrid">
+        <!-- Products loaded via JS -->
+    </div>
+</section>
+
+<!-- Cart Sidebar -->
+<div class="cart-sidebar position-fixed top-0 end-0 vh-100 p-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h3>Seu Carrinho</h3>
+        <button class="btn btn-link" onclick="toggleCart()">&times;</button>
+    </div>
+    <div id="cartItems"></div>
+    <div class="mt-auto border-top pt-4">
+        <h5>Total: R$ <span id="cartTotal">0.00</span></h5>
+        <button class="btn btn-dark w-100 mt-3">Finalizar Compra</button>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h4>MRSPORTSE</h4>
+                <p>A maior loja de camisas oficiais do Brasil</p>
+            </div>
+            <div class="col-md-4">
+                <h4>Links Úteis</h4>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">Trocas e Devoluções</a></li>
+                    <li><a href="#" class="text-light">Dúvidas Frequentes</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h4>Newsletter</h4>
+                <div class="input-group">
+                    <input type="email" class="form-control" placeholder="Seu melhor email">
+                    <button class="btn btn-primary">Assinar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script>
+    // Configuração inicial
+    const products = [
+        {
+            id: 1,
+            name: "Flamengo 2024",
+            price: 349.90,
+            image: "",
+            sizes: ["P", "M", "G", "GG"],
+            team: "Flamengo",
+            league: "Brasileirão"
+        },
+        // Adicione mais produtos
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+        initSwiper();
+        renderProducts();
+        updateCart();
+        updateWishlist();
+    });
+
+    function initSwiper() {
+        new Swiper('.swiper', {
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true
+            },
+            autoplay: {
+                delay: 5000
+            }
+        });
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = products.map(product => `
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card card h-100">
+                    <button class="wishlist-btn btn btn-link" onclick="toggleWishlist(${product.id})">
+                        <i class="${wishlist.some(p => p.id === product.id) ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+                    <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.name}</h5>
+                        <p class="text-danger fw-bold">R$ ${product.price.toFixed(2)}</p>
+                    </div>
+                    <div class="size-selector">
+                        <div class="d-flex gap-2">
+                            ${product.sizes.map(size => `
+                                <button class="btn btn-sm btn-outline-dark" 
+                                    onclick="addToCart(${product.id}, '${size}')">
+                                    ${size}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addToCart(productId, size) {
+        const product = products.find(p => p.id === productId);
+        cart.push({...product, size, quantity: 1});
+        updateCart();
+    }
+
+    function updateCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.getElementById('cartCount').textContent = cart.length;
+        // Atualizar lista de itens do carrinho
+    }
+
+    function toggleCart() {
+        document.querySelector('.cart-sidebar').classList.toggle('cart-open');
+    }
+
+    // Adicione funções para wishlist, checkout e outras funcionalidades
+<://acme-v02.api.letsencrypt.org/directory;>
+</body>
+</https://via.placeholder.com/800x1000/FF0000/FFFFFF?text=CAMISA+FLAMENGO
